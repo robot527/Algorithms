@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define NUM 100
+#define NUM 10000
 #define OK	1
 #define ERROR	-1
 
@@ -17,13 +17,20 @@ void show_array(int arr[], int len)
 	printf("\n");
 }
 
+void swap(int *a, int *b)
+{
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
+}
+
 void create_random_array(int *arr, int n)
 {
 	int i;
 	srand(time(0));
 	for (i = 0; i < n; i ++)
-		arr[i] = rand() % (NUM * 10);
-	printf("生产的数组如下：\n");
+		arr[i] = rand() % (n * 10);
+	printf("生成的数组如下：\n");
 	show_array(arr, n);
 }
 
@@ -84,18 +91,57 @@ int quick_sort_v1(int *arr, int len)
 	return ret;
 }
 
+// According to <<Introduction to Algorithms Third Edition>> section 7.1 
+int partition_v1(int *arr, int p, int r)
+{
+	int x = arr[r];
+	int i = p - 1, j;
+	
+	for (j = p; j < r; j ++)
+	{
+		if (arr[j] <= x)
+		{
+			i ++;
+			swap(&arr[i], &arr[j]);
+		}
+	}
+	swap(&arr[i + 1], &arr[j]);
+	return i + 1;
+}
+
+void quick_sort_v2(int *arr, int p, int r)
+{
+	int q = 0;
+	if (p >= r) return;
+	q = partition_v1(arr, p, r);
+	quick_sort_v2(arr, p, q - 1);
+	quick_sort_v2(arr, q + 1, r);
+}
+
 int main(void)
 {
 	int a[NUM] = {0};
 	int n = NUM;
 
+	printf("Input the length(not more than %d) of array:", NUM);
+	scanf("%d", &n);
+	if (n > NUM || n < 1)
+	{
+		printf("Input para error!\n");
+		return 0;
+	}
 	create_random_array(a, n);
+#if	0
 	if (quick_sort_v1(a, n) == OK)
 	{
 		printf("\n快速排序后:\n");
 		show_array(a, n);
 	}
 	else printf("排序失败！\n");
+#endif
+	quick_sort_v2(a, 0, n - 1);
+	printf("\n快速排序后:\n");
+	show_array(a, n);
 
 	return 0;
 }
