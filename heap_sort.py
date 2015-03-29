@@ -37,7 +37,6 @@ def generate_random_integer_list(n, stop=100):
 
 
 def main():
-    from sys import exit
     num = raw_input('Input the length of list-> ')
     try:
         num = int(num)
