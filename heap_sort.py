@@ -1,5 +1,5 @@
 #!/usr/bin/env python
- 
+
 
 def heap_sort(lst):
     def sift_down(start, end):
@@ -16,11 +16,11 @@ def heap_sort(lst):
                 root = child
             else:
                 break
- 
-    # build max-heap 
+
+    # build max-heap
     for start in range(int((len(lst) - 2) / 2), -1, -1):
         sift_down(start, len(lst) - 1)
- 
+
     # heap sort
     for end in range(len(lst) - 1, 0, -1):
         lst[0], lst[end] = lst[end], lst[0]
@@ -50,7 +50,7 @@ def main():
     print list1
     list2 = heap_sort(list1)
     print "After sorting: "
-    print list2 
+    print list2
 
 if __name__ == "__main__":
     main()

@@ -14,6 +14,7 @@ def merge_sort(lst):
         return lst
 
     def merge_list(left, right):
+        """merge two sorted list"""
         temp = []
         while left and right:
             temp.append(left.pop(0) if left[0] <= right[0]\
