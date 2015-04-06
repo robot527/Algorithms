@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 
-#define NUM 10000
+#define NUM 1000000
+#define MILLION 1000000
 
 void show_array(int arr[], int len)
 {
 	int i;
+	if (len > 65535) return;
 	for (i = 0; i < len; i ++)
 	{
 		printf("%-7d", arr[i]);
@@ -85,6 +88,8 @@ int main(void)
 {
 	int a[NUM] = {0};
 	int n = NUM;
+	struct timeval start, end;
+	double t;
 
 	printf("Input the length(not more than %d) of array:", NUM);
 	scanf("%d", &n);
@@ -94,14 +99,20 @@ int main(void)
 		return 0;
 	}
 	create_random_array(a, n);
-#if	0
+	gettimeofday(&start, NULL);
+#if	1
 	direct_insert_sort(a, 0, n - 1);
 	printf("\n直接插入排序后:\n");
 #else
 	binary_insert_sort(a, n);
 	printf("\n二分插入排序后:\n");
 #endif
+	gettimeofday(&end, NULL);
+	t = end.tv_sec - start.tv_sec\
+		+ (double)(end.tv_usec - start.tv_usec) / MILLION;
+
 	show_array(a, n);
+	printf("排序耗时： %.6f seconds\n", t);
 
 	return 0;
 }

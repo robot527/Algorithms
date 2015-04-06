@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 
-#define NUM 10000
+#define NUM 1000000
+#define MILLION 1000000
 #define OK	1
 #define ERROR	-1
 
 void show_array(int arr[], int len)
 {
 	int i;
+	if (len > 65535) return;
 	for (i = 0; i < len; i ++)
 	{
 		printf("%-7d", arr[i]);
@@ -122,6 +125,8 @@ int main(void)
 {
 	int a[NUM] = {0};
 	int n = NUM;
+	struct timeval start, end;
+	double t;
 
 	printf("Input the length(not more than %d) of array:", NUM);
 	scanf("%d", &n);
@@ -131,6 +136,7 @@ int main(void)
 		return 0;
 	}
 	create_random_array(a, n);
+	gettimeofday(&start, NULL);
 #if	0
 	if (quick_sort_v1(a, n) == OK)
 	{
@@ -138,10 +144,16 @@ int main(void)
 		show_array(a, n);
 	}
 	else printf("排序失败！\n");
-#endif
+#else
 	quick_sort_v2(a, 0, n - 1);
 	printf("\n快速排序后:\n");
+#endif
+
+	gettimeofday(&end, NULL);
+	t = end.tv_sec - start.tv_sec\
+		+ (double)(end.tv_usec - start.tv_usec) / MILLION;
 	show_array(a, n);
+	printf("排序耗时： %.6f seconds\n", t);
 
 	return 0;
 }
