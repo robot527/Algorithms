@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 
-#define NUM 10000
+#define NUM 1000000
+#define MILLION 1000000
 #define OK	1
 #define ERROR	-1
 
 void show_array(int arr[], int len)
 {
 	int i;
+	if (len > 10000) return;
 	for (i = 0; i < len; i ++)
 	{
 		printf("%-7d", arr[i]);
@@ -53,7 +56,8 @@ void merge_sort(int *arr, int first, int last, int *temp)
 	if (NULL == arr || NULL == temp) return;
 	if (first < last)
 	{
-		int mid = first + (last - first) / 2;
+		//int mid = first + (last - first) / 2;
+		int mid = first + ((last - first) >> 1);
 		merge_sort(arr, first, mid, temp);
 		merge_sort(arr, mid + 1, last, temp);
 		merge_array(arr, first, mid, last, temp);
@@ -64,6 +68,8 @@ int main(void)
 {
 	int a[NUM] = {0}, n = NUM;
 	int *temp;
+	struct timeval start, end;
+	double t;
 
 	printf("Input the length(not more than %d) of array:", NUM);
 	scanf("%d", &n);
@@ -75,9 +81,14 @@ int main(void)
 	create_random_array(a, n);
 	temp = (int *)calloc(n, sizeof(int));
 	if (NULL == temp) return 0;
+	gettimeofday(&start, NULL);
 	merge_sort(a, 0, n - 1, temp);
+	gettimeofday(&end, NULL);
 	printf("\n归并排序后:\n");
+	t = end.tv_sec - start.tv_sec\
+		+ (double)(end.tv_usec - start.tv_usec) / MILLION;
 	show_array(a, n);
+	printf("排序耗时： %.6f seconds\n", t);
 	if (temp != NULL) free(temp);
 	
 	return 0;
