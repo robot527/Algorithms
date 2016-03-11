@@ -65,8 +65,26 @@ NODE *find_previous(element_type x, HEAD *list)
 	p = list->next;
 	while(p->next != NULL && p->next->data != x)
 		p = p->next;
+	if(NULL == p->next) return NULL;
 
-	return p;	
+	return p;
+}
+
+NODE *get_nth_node(HEAD *list, uint32 n)
+{
+	NODE   *p;
+	uint32 index = 1;
+
+	assert(list != NULL);
+	if(n < 1) return NULL;
+	p = list->next;
+	while(p != NULL && index < n)
+	{
+		p = p->next;
+		index++;
+	}
+
+	return p;
 }
 
 int insert_before_node(element_type x, NODE *pNode, HEAD *list)
@@ -124,13 +142,17 @@ int delete_element(element_type x, HEAD *list)
 		list->next = p->next;
 		free(p);
 		list->count--;
+		printf("\t%s line %d\n", __FUNCTION__, __LINE__);
 		return OK;
 	}
 
 	p = find_previous(x, list);
 	if(NULL == p) return ERROR;
 	temp = p->next; /* record position of x */
-	p->next = temp->next; /* bypass the node to be deleted */
+	if(IS_LAST(temp))
+		p->next = NULL;
+	else
+		p->next = temp->next; /* bypass the node to be deleted */
 	free(temp);
 	list->count--;
 
@@ -211,6 +233,7 @@ void print_list(HEAD *list)
 		p = p->next;
 		index++;
 	} while (p != NULL);
+	printf("\n");
 }
 
 

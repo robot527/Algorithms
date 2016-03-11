@@ -52,6 +52,10 @@ NODE *find_element(element_type x, HEAD *list);
  * If x is in the list, assume x isn't in the first node after list head */
 NODE *find_previous(element_type x, HEAD *list);
 
+/* Get the node at a specified index in the list.
+ * Return node point at the specified index, or NULL if out of range. */
+NODE *get_nth_node(HEAD *list, uint32 n);
+
 /* Insert a new node with x before pNode to the list.
  * If list is empty, append new node after the list head.
  * Return OK, or ERROR if failed. */
