@@ -34,6 +34,17 @@ int list_len(HEAD *list)
 	return list->count;
 }
 
+HEAD *create_empty_list(void)
+{
+	HEAD *list = malloc(sizeof(HEAD));
+
+	if(NULL == list) return NULL;
+	list->next = NULL;
+	list->count = 0;
+
+	return list;
+}
+
 NODE *find_element(element_type x, HEAD *list)
 {
 	NODE *p;

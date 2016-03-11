@@ -29,12 +29,11 @@
 int test_insert(void)
 {
 	uint32 i;
-	HEAD   *list = malloc(sizeof(HEAD));
+	HEAD   *list;
 	element_type data;
 
+	list = create_empty_list();
 	if(NULL == list) return ERROR;
-	list->next = NULL;
-	list->count = 0;
 
 	srand(time(0));
 	for(i = 0; i < 10; i++)

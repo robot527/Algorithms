@@ -41,6 +41,10 @@ typedef struct _sl_list_head_
  * if param list is null, returns -1. */
 int list_len(HEAD *list);
 
+/* Create an empty list with a head.
+ * Return the head of new list, or NULL if failed. */
+HEAD *create_empty_list(void);
+
 /* Return the position of x in list, or NULL if not found. */
 NODE *find_element(element_type x, HEAD *list);
 
