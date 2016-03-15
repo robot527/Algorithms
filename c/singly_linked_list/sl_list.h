@@ -61,6 +61,11 @@ NODE *get_nth_node(HEAD *list, uint32 n);
  * Return OK, or ERROR if failed. */
 int insert_before_node(element_type x, NODE *pNode, HEAD *list);
 
+/* Insert a new node with x after pNode to the list.
+ * If list is empty, append new node after the list head.
+ * Return OK, or ERROR if failed. */
+int insert_after_node(element_type x, NODE *pNode, HEAD *list);
+
 /* Delete the first occurrence of x from the list.
  * Return OK, or ERROR if not found. */
 int delete_element(element_type x, HEAD *list);
@@ -77,6 +82,13 @@ void destroy_list(HEAD *list);
 
 /* Print all nodes content of list to stdout */
 void print_list(HEAD *list);
+
+/* Return the tail node of the list, or NULL if list is empty. */
+NODE *list_tail(HEAD *list);
+
+/* Append a new node with x to the end of the list.
+ * Return OK, or ERROR it failed to allocate a new node. */
+int list_append(element_type x, HEAD *list);
 
 
 #endif /* _SL_LIST_H_ */

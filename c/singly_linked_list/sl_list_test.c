@@ -29,7 +29,7 @@
 int test_insert(void)
 {
 	uint32 i;
-	HEAD   *list;
+	HEAD   *list, *list1;
 	element_type data;
 
 	list = create_empty_list();
@@ -42,8 +42,28 @@ int test_insert(void)
 		printf("%3d ", data);
 		insert_before_node(data, list->next, list);
 	}
-	printf("\nInsertion was completed.\n\n");
-	
+	printf("\nInsertion of list was completed.\n\n");
+	print_list(list);
+
+	list1 = create_empty_list();
+	if(NULL == list1) return ERROR;
+	for(i = 0; i < 5; i++)
+	{
+		data = rand() % 100;
+		printf("%3d ", data);
+		insert_after_node(data, list1->next, list1);
+	}
+	printf("\nInsertion of list1 was completed.\n\n");
+	print_list(list1);
+
+	empty_list(list);
+	for(i = 0; i < 7; i++)
+	{
+		data = rand() % 100;
+		printf("%3d ", data);
+		list_append(data, list);
+	}
+	printf("\nAppend nodes to list was completed.\n\n");
 	print_list(list);
 
 	return OK;
@@ -92,8 +112,8 @@ int test_delete(void)
 int main(void)
 {
 	printf("Start testing singly linked list: \n");
-	//test_insert();
-	test_delete();
+	test_insert();
+	//test_delete();
 
 	printf("Test was completed.\n\n");
 	exit(EXIT_SUCCESS);

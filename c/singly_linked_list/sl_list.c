@@ -130,6 +130,39 @@ int insert_before_node(element_type x, NODE *pNode, HEAD *list)
 	return OK;
 }
 
+int insert_after_node(element_type x, NODE *pNode, HEAD *list)
+{
+	NODE *pNew;
+	NODE *p;
+
+	assert(list != NULL);
+	pNew = malloc(sizeof(NODE));
+	if(NULL == pNew) return ERROR;
+	if(IS_EMPTY(list))
+	{
+		/* ignore pNode */
+		list->next = pNew;
+		pNew->next = NULL;
+	}
+	else
+	{
+		p = list->next;
+		while(p != pNode && p != NULL)
+			p = p->next;
+		if(NULL == p) /* did not find matching node */
+		{
+			free(pNew);
+			return ERROR;
+		}
+		pNew->next = p->next;
+		p->next = pNew;
+	}
+	pNew->data = x;
+	list->count++;
+
+	return OK;
+}
+
 int delete_element(element_type x, HEAD *list)
 {
 	NODE *p, *temp;
@@ -229,14 +262,48 @@ void print_list(HEAD *list)
 	p = list->next;
 	do
 	{
-		printf("List item(%2u) : addr(%p) -> data(%d)\n", index, p, p->data);
+		printf("List item(%2u) : addr(%p) -> data(%3d) next(%p)\n",
+			index, p, p->data, p->next);
 		p = p->next;
 		index++;
 	} while (p != NULL);
 	printf("\n");
 }
 
+NODE *list_tail(HEAD *list)
+{
+	NODE *p;
 
+	assert(list != NULL);
+	p = list->next;
+	if(NULL == p) return NULL;
+	while(p->next != NULL)
+		p = p->next;
+
+	return p;	
+}
+
+int list_append(element_type x, HEAD *list)
+{
+	NODE *pNew;
+	NODE *tail;
+
+	assert(list != NULL);
+	pNew = malloc(sizeof(NODE));
+	if(NULL == pNew) return ERROR;
+	pNew->data = x;
+	tail = list_tail(list);
+	if(NULL == tail)
+	{
+		list->next = pNew;
+	}
+	else
+	{
+		tail->next = pNew;
+	}
+	pNew->next = NULL;
+	return OK;
+}
 
 
 #endif  /* _SL_LIST_C_ */
