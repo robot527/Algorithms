@@ -90,5 +90,12 @@ NODE *list_tail(HEAD *list);
  * Return OK, or ERROR it failed to allocate a new node. */
 int list_append(element_type x, HEAD *list);
 
+/* Create a list with n nodes who's data is random.
+ * Return the head of new list, or NULL if failed. */
+HEAD *create_list_with_random_data(uint32 n);
+
+/* Copy data of all nodes from src list to dest list. */
+HEAD *list_copy(HEAD *dest, HEAD *src);
+
 
 #endif /* _SL_LIST_H_ */

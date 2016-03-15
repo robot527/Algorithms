@@ -72,25 +72,16 @@ int test_insert(void)
 int test_delete(void)
 {
 	int    ret;
-	uint32 i;
 	HEAD   *list;
 	NODE   *pNode;
 	element_type data;
 
-	list = create_empty_list();
+	list = create_list_with_random_data(5);
 	if(NULL == list) return ERROR;
 
-	srand(time(0));
-	for(i = 0; i < 10; i++)
-	{
-		data = rand() % 21;
-		printf("%3d ", data);
-		insert_before_node(data, list->next, list);
-	}
-	printf("\nInsertion was completed.\n\n");
 	print_list(list);
 
-	data = 10;
+	data = 27;
 	ret = delete_element(data, list);
 	if(ret != OK)
 		printf("element %d was not found!\n", data);
@@ -98,10 +89,10 @@ int test_delete(void)
 		printf("Delete the node who's data is %d!\n", data);
 	print_list(list);
 
-	pNode = get_nth_node(list, 5);
+	pNode = get_nth_node(list, 3);
 	if(pNode != NULL)
 	{
-		printf("Delete the 5th node(%d)!\n", pNode->data);
+		printf("Delete the 3th node(%d)!\n", pNode->data);
 		delete_node(pNode, list);		
 	}
 	print_list(list);
@@ -109,11 +100,29 @@ int test_delete(void)
 	return OK;
 }
 
+int test_copy(void)
+{
+	HEAD   *list, *dst;
+
+	list = create_list_with_random_data(11);
+	if(NULL == list) return ERROR;
+
+	print_list(list);
+	dst = create_empty_list();
+	if(NULL == dst) return ERROR;
+	list_copy(dst, list);
+	printf("The copy of list was completed.\n");
+	print_list(dst);
+
+	return OK;
+}
+
 int main(void)
 {
 	printf("Start testing singly linked list: \n");
-	test_insert();
+	//test_insert();
 	//test_delete();
+	test_copy();
 
 	printf("Test was completed.\n\n");
 	exit(EXIT_SUCCESS);

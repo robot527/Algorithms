@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #include "../lib/common_def.h"
 #include "sl_list.h"
@@ -182,10 +183,7 @@ int delete_element(element_type x, HEAD *list)
 	p = find_previous(x, list);
 	if(NULL == p) return ERROR;
 	temp = p->next; /* record position of x */
-	if(IS_LAST(temp))
-		p->next = NULL;
-	else
-		p->next = temp->next; /* bypass the node to be deleted */
+	p->next = temp->next; /* bypass the node to be deleted */
 	free(temp);
 	list->count--;
 
@@ -259,6 +257,7 @@ void print_list(HEAD *list)
 		printf("Empty list !\n");
 		return;
 	}
+	printf("The list has %u nodes: \n", list->count);
 	p = list->next;
 	do
 	{
@@ -302,9 +301,54 @@ int list_append(element_type x, HEAD *list)
 		tail->next = pNew;
 	}
 	pNew->next = NULL;
+	list->count++;
 	return OK;
 }
 
+HEAD *create_list_with_random_data(uint32 n)
+{
+	uint32 i;
+	element_type data;
+	HEAD *list;
+
+	assert(n > 0);
+	list = create_empty_list();
+	if(NULL == list) return NULL;
+
+	srand(time(0));
+	for(i = 0; i < n; i++)
+	{
+		data = rand() % (n + 50);
+		printf("%3d ", data);
+		if(list_append(data, list) != OK)
+		{
+			destroy_list(list);
+			return NULL;
+		}
+	}
+	printf("\nCreation of list was completed.\n\n");
+
+	return list;
+}
+
+HEAD *list_copy(HEAD *dest, HEAD *src)
+{
+	int ret = OK;
+	NODE *p;
+
+	assert(dest != NULL && src != NULL);
+	empty_list(dest);
+	//printf("src has %u nodes\n", src->count);
+	if(src->count < 1) return dest;
+	p = src->next;
+	while(p != NULL && OK == ret)
+	{
+		ret = list_append(p->data, dest);
+		p = p->next;
+	}
+
+	return dest;
+}
 
 #endif  /* _SL_LIST_C_ */
 
