@@ -45,7 +45,7 @@ int list_len(HEAD *list);
  * Return the head of new list, or NULL if failed. */
 HEAD *create_empty_list(void);
 
-/* Return the position of x in list, or NULL if not found. */
+/* Return the position of first x in list, or NULL if not found. */
 NODE *find_element(element_type x, HEAD *list);
 
 /* Return the position of node before x, or NULL if not found.
