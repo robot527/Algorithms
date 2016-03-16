@@ -97,5 +97,11 @@ HEAD *create_list_with_random_data(uint32 n);
 /* Copy data of all nodes from src list to dest list. */
 HEAD *list_copy(HEAD *dest, HEAD *src);
 
+/* Reverse data of the list. */
+HEAD *list_reverse1(HEAD *list);
+HEAD *list_reverse2(HEAD *list);
+HEAD *list_reverse(HEAD *list);
+
+
 
 #endif /* _SL_LIST_H_ */

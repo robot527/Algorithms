@@ -21,10 +21,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
+#include <sys/time.h>
 
 #include "../lib/common_def.h"
 #include "sl_list.h"
 
+
+//typedef HEAD  (*LIST_FUNC)(HEAD *); /* Parameter passed error ! */
+typedef void (*LIST_FUNC)(HEAD *);
+
+void test_consumed_time(LIST_FUNC func, HEAD *list)
+{
+	struct timeval start, end;
+	double t;
+
+	if(NULL == func) return;
+	assert(list != NULL);
+	gettimeofday(&start, NULL);
+	//printf("%s -> para list: %p\n", __FUNCTION__, list);
+	func(list);
+	gettimeofday(&end, NULL);
+	t = end.tv_sec - start.tv_sec\
+		+ (double)(end.tv_usec - start.tv_usec) / 1000000;
+	printf("consumed time: %.6f seconds.\n\n", t);
+}
 
 int test_insert(void)
 {
@@ -100,19 +121,25 @@ int test_delete(void)
 	return OK;
 }
 
-int test_copy(void)
+int test_reverse(void)
 {
-	HEAD   *list, *dst;
+	HEAD *list;
 
-	list = create_list_with_random_data(11);
+	list = create_list_with_random_data(30000);
 	if(NULL == list) return ERROR;
 
-	print_list(list);
-	dst = create_empty_list();
-	if(NULL == dst) return ERROR;
-	list_copy(dst, list);
-	printf("The copy of list was completed.\n");
-	print_list(dst);
+	if(list->count < 50) print_list(list);
+	//list_reverse1(list);
+	printf("The reversion of list(%u nodes) by list_reverse1:\n", list->count);
+	test_consumed_time((LIST_FUNC)list_reverse1, list);
+	printf("The reversion of list(%u nodes) by list_reverse2:\n", list->count);
+	test_consumed_time((LIST_FUNC)list_reverse2, list);
+	printf("The reversion of list(%u nodes) by list_reverse:\n", list->count);
+	test_consumed_time((LIST_FUNC)list_reverse, list);
+
+	printf("The reversion of list was completed.\n");
+	if(list->count < 50) print_list(list);
+	destroy_list(list);
 
 	return OK;
 }
@@ -122,7 +149,8 @@ int main(void)
 	printf("Start testing singly linked list: \n");
 	//test_insert();
 	//test_delete();
-	test_copy();
+	//test_copy();
+	test_reverse();
 
 	printf("Test was completed.\n\n");
 	exit(EXIT_SUCCESS);

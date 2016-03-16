@@ -319,7 +319,7 @@ HEAD *create_list_with_random_data(uint32 n)
 	for(i = 0; i < n; i++)
 	{
 		data = rand() % (n + 50);
-		printf("%3d ", data);
+		//printf("%3d ", data);
 		if(list_append(data, list) != OK)
 		{
 			destroy_list(list);
@@ -349,6 +349,77 @@ HEAD *list_copy(HEAD *dest, HEAD *src)
 
 	return dest;
 }
+
+HEAD *list_reverse1(HEAD *list)
+{
+	int ret = OK, ret1 = OK;
+	HEAD *temp;
+	NODE *tail;
+
+	assert(list != NULL);
+	temp = create_empty_list();
+	if(NULL == temp) return list;
+	list_copy(temp, list);
+	empty_list(list);
+	tail = list_tail(temp);
+	while(tail != NULL && OK == ret && OK == ret1)
+	{		
+		ret = list_append(tail->data, list);
+		ret1 = delete_node(tail, temp);
+		tail = list_tail(temp);
+	}
+	destroy_list(temp);
+
+	return list;
+}
+
+HEAD *list_reverse2(HEAD *list)
+{
+	int ret = OK;
+	HEAD *temp;
+	NODE *p, *tail;
+
+	assert(list != NULL);
+	temp = create_empty_list();
+	if(NULL == temp) return list;
+	list_copy(temp, list);
+	tail = list_tail(temp);
+	p = list->next;
+	while(tail != NULL && p != NULL && OK == ret)
+	{		
+		p->data = tail->data;
+		ret = delete_node(tail, temp);
+		tail = list_tail(temp);
+		p = p->next;
+	}
+	destroy_list(temp);
+
+	return list;
+}
+
+HEAD *list_reverse(HEAD *list)
+{
+	int ret = OK;
+	HEAD *temp;
+	NODE *p;
+
+	assert(list != NULL);
+	//printf("%s -> para list: %p\n", __FUNCTION__, list);
+	temp = create_empty_list();
+	if(NULL == temp) return list;
+	list_copy(temp, list);
+	empty_list(list);
+	p = temp->next;
+	while(p != NULL && OK == ret)
+	{		
+		ret = insert_before_node(p->data, list->next, list);
+		p = p->next;
+	}
+	destroy_list(temp);
+
+	return list;
+}
+
 
 #endif  /* _SL_LIST_C_ */
 
