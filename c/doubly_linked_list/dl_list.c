@@ -29,18 +29,6 @@
 #include "dl_list.h"
 
 
-ENTRY *create_new_list(void)
-{
-	ENTRY *list = malloc(sizeof(ENTRY));
-
-	if(NULL == list) return NULL;
-	list->next = NULL;
-	list->prev = NULL;
-	list->data = 0;
-
-	return list;
-}
-
 int list_len(ENTRY *list)
 {
 	ENTRY *p;
@@ -88,19 +76,59 @@ ENTRY *list_get_nth_entry(ENTRY *list, uint32 n)
 	return p;
 }
 
-ENTRY *list_prepend(ENTRY *list, element_type x)
+ENTRY *list_prepend(ENTRY **list, element_type x)
 {
 	ENTRY *newEntry;
 
-	assert(list != NULL && list->prev == NULL);
-	//printf("prev(%p) \n", list->prev);
-	//assert(list->prev == NULL);
+	assert(list != NULL);
 	newEntry = malloc(sizeof(ENTRY));
 	if(NULL == newEntry) return NULL;
 	newEntry->data = x;
 	newEntry->prev = NULL;
-	newEntry->next = list;
-	list->prev = newEntry;
+
+	if(*list != NULL) (*list)->prev = newEntry;
+	newEntry->next = *list;
+	*list = newEntry;
+
+	return newEntry;
+}
+
+ENTRY *list_tail(ENTRY **list)
+{
+	ENTRY *p;
+
+	assert(list != NULL);
+	if(NULL == *list) return NULL;
+	p = *list;
+	while(p->next != NULL)
+		p = p->next;
+
+	return p;
+}
+
+ENTRY *list_append(ENTRY **list, element_type x)
+{
+	ENTRY *newEntry;
+	ENTRY *tail;
+
+	assert(list != NULL);
+	newEntry = malloc(sizeof(ENTRY));
+	if(NULL == newEntry) return NULL;
+	newEntry->data = x;
+	newEntry->next = NULL;
+
+	if(*list != NULL)
+	{
+		tail = list_tail(list);
+		assert(NULL == tail->next);
+		tail->next = newEntry;
+		newEntry->prev = tail;
+	}
+	else
+	{
+		*list = newEntry;
+		newEntry->prev = NULL;
+	}
 
 	return newEntry;
 }
@@ -109,21 +137,14 @@ ENTRY *create_list_with_random_data(uint32 n)
 {
 	uint32 i;
 	element_type data;
-	ENTRY *list;
+	ENTRY *list = NULL;
 
 	assert(n > 0);
-	list = create_new_list();
-	if(NULL == list) return NULL;
-
-	srand(time(0));
-	list->data = rand() % (n + 50);
-	printf("%3d ", list->data);
-	//printf("list(%p), prev(%p)\n", list, list->prev);
-	for(i = 1; i < n; i++)
+	for(i = 0; i < n; i++)
 	{
 		data = rand() % (n + 50);
 		printf("%3d ", data);
-		if((list = list_prepend(list, data)) == NULL)
+		if(list_append(&list, data) == NULL)
 		{
 			destroy_list(list);
 			return NULL;

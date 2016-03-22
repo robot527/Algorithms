@@ -30,10 +30,6 @@ typedef struct _dl_list_entry_
 }ENTRY;
 
 
-/* Create an list with a head entry.
- * Return the entry of new list, or NULL if failed. */
-ENTRY *create_new_list(void);
-
 /* Return number of entries in the list.
  * if param list is null, returns 0. */
 int list_len(ENTRY *list);
@@ -47,7 +43,14 @@ ENTRY *list_get_nth_entry(ENTRY *list, uint32 n);
 
 /* Insert a new entry with x before head entry to the list.
  * Return the new entry, or NULL if failed. */
-ENTRY *list_prepend(ENTRY *list, element_type x);
+ENTRY *list_prepend(ENTRY **list, element_type x);
+
+/* Return the tail entry of the list, or NULL if list is empty. */
+ENTRY *list_tail(ENTRY **list);
+
+/* Append a new entry with x to the end of the list.
+ * Return the new entry, or NULL if failed. */
+ENTRY *list_append(ENTRY **list, element_type x);
 
 /* Create a list with n entries who's data is random.
  * Return the head entry of new list, or NULL if failed. */

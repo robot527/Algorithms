@@ -60,7 +60,6 @@ int test_find(void)
 	}
 	else
 		printf("data 25 was not found!\n\n");
-	//list_len(p);
 
 	n = 5;
 	p = list_get_nth_entry(list, 5);
@@ -68,7 +67,6 @@ int test_find(void)
 	{
 		printf("List item : addr(%p) | prev(%9p) | data(%3d) | next(%9p)\n\n",
 			p, p->prev, p->data, p->next);
-		//list_len(p);
 	}
 	else
 		printf("The %dth entry was not found!\n", n);
@@ -78,8 +76,16 @@ int test_find(void)
 	if(p != NULL)
 		printf("List (addr %p) has some errors !\n\n", list);
 	else
-		printf("The %dth entry was not found!\n", n);
+		printf("The %dth entry was not found!\n\n", n);
 
+	p = list_tail(&list);
+	if(p != NULL)
+	{
+		printf("List tail : addr(%p) | prev(%9p) | data(%3d) | next(%9p)\n\n",
+			p, p->prev, p->data, p->next);
+	}
+	else
+		printf("The tail entry was not found!\n");
 	destroy_list(list);
 
 	return OK;
