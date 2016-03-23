@@ -11,7 +11,6 @@
  *       Compiler:  gcc
  *
  *         Author:  luoyz , NULL
- *        Company:  NULL
  *
  * =====================================================================================
  */
@@ -55,6 +54,10 @@ ENTRY *list_append(ENTRY **list, element_type x);
 /* Create a list with n entries who's data is random.
  * Return the head entry of new list, or NULL if failed. */
 ENTRY *create_list_with_random_data(uint32 n);
+
+/* Delete an entry from the list.
+ * Return OK, or ERROR if not failed. */
+int list_delete_entry(ENTRY **list, ENTRY *entry);
 
 /* Delete all entries in the list. */
 void destroy_list(ENTRY *list);

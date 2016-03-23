@@ -11,7 +11,6 @@
  *       Compiler:  gcc
  *
  *         Author:  luoyz , NULL
- *        Company:  NULL
  *
  * =====================================================================================
  */
@@ -153,6 +152,31 @@ ENTRY *create_list_with_random_data(uint32 n)
 	printf("\nCreation of list was completed.\n\n");
 
 	return list;
+}
+
+int list_delete_entry(ENTRY **list, ENTRY *entry)
+{
+	ENTRY *p;
+
+	/* If the list is empty, or entry is NULL, always fail */
+	if(NULL == list || NULL == *list || NULL== entry) return ERROR;
+	if(*list == entry)
+	{
+		*list = entry->next;
+		if(entry->next != NULL) entry->next->prev = NULL;
+	}
+	else
+	{
+		p = *list;
+		while(p->next != NULL && p->next != entry)
+			p = p->next;
+		if(NULL == p) return ERROR; /* did not find matching entry */
+		p->next = entry->next;
+		if(entry->next != NULL) entry->next->prev = p;
+	}
+	free(entry);
+
+	return OK;
 }
 
 void destroy_list(ENTRY *list)
