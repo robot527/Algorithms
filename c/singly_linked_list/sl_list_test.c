@@ -107,35 +107,82 @@ int test_insert(void)
 
 int test_delete(void)
 {
-	int    ret;
 	HEAD   *list;
 	NODE   *pNode;
-	element_type data;
+	uint32 n, len = 11;
 
 	printf("==============================================================\n");
 	printf("Testing list delete functions:\n");
-	list = create_list_with_random_data(5);
+	list = create_list_with_random_data(len);
 	if(NULL == list) return ERROR;
-
 	print_list(list);
-	pNode = get_nth_node(list, 3);
+
+	/* test NULL */
+	if(delete_node(NULL, list) == OK)
+		printf("Function delete_node was designed unreasonable !\n");
+
+	n = 1; /* test the first node */
+	pNode = get_nth_node(list, n);
+	if(delete_node(pNode, list) == OK)
+	{
+		printf("Deleted the %dth node!\n", n);
+		if(list_len(list) != (len - 1))
+			printf("delete_node encountered some errors !\n");
+	}
+	print_list(list);
+
+	n = list_len(list); /* test the last node */
+	pNode = get_nth_node(list, n);
+	if(delete_node(pNode, list) == OK)
+	{
+		printf("Deleted the %dth node!\n", n);
+		if(list_len(list) != (n - 1))
+			printf("delete_node encountered some errors !\n");
+	}
+	print_list(list);
+
+	len = list_len(list);
+	n = len / 2 + 1; /* test the middle node */
+	pNode = get_nth_node(list, n);
+	if(delete_node(pNode, list) == OK)
+	{
+		printf("Deleted the %dth node!\n", n);
+		if(list_len(list) != (len - 1))
+			printf("delete_node encountered some errors !\n");
+	}
+	print_list(list);
+
+	n = list_len(list); /* test the last element */
+	pNode = get_nth_node(list, n);
 	if(pNode != NULL)
 	{
-		printf("Delete the 3th node(%d)!\n", pNode->data);
-		delete_node(pNode, list);
-		if(list_len(list) != 4) printf("delete_node encountered some errors !\n");
+		printf("Delete the node who's data is %d!\n", pNode->data);
+		if(delete_element(pNode->data, list) != OK)
+			printf("delete_element encountered some errors !\n");
 	}
 	print_list(list);
 
-	data = 27;
-	ret = delete_element(data, list);
-	if(ret != OK)
-		printf("element %d was not found!\n", data);
-	else
+	pNode = get_nth_node(list, 1); /* test the first element */
+	if(pNode != NULL)
 	{
-		printf("Deleted the node who's data is %d!\n", data);
-		print_list(list);
+		printf("Delete the node who's data is %d!\n", pNode->data);
+		if(delete_element(pNode->data, list) != OK)
+			printf("delete_element encountered some errors !\n");
 	}
+	print_list(list);
+
+	n = list_len(list) / 2; /* test the middle element */
+	pNode = get_nth_node(list, n);
+	if(pNode != NULL)
+	{
+		printf("Delete the node who's data is %d!\n", pNode->data);
+		if(delete_element(pNode->data, list) != OK)
+			printf("delete_element encountered some errors !\n");
+	}
+	print_list(list);
+
+	if(delete_element(-1, list) == OK)
+		printf("delete_element encountered some errors !\n");
 
 	empty_list(list);
 	if(list_len(list) != 0) printf("empty_list encountered some errors !\n");
@@ -149,7 +196,7 @@ int test_reverse(void)
 
 	printf("==============================================================\n");
 	printf("Testing list reverse functions:\n");
-	list = create_list_with_random_data(1000);
+	list = create_list_with_random_data(2000);
 	if(NULL == list) return ERROR;
 
 	if(list->count < 50) print_list(list);

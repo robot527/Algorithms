@@ -34,7 +34,6 @@ typedef struct _sl_list_head_
 }HEAD;
 
 #define IS_EMPTY(p_head) (NULL == (p_head)->next)
-#define IS_LAST(p_node) (NULL == (p_node)->next)
 
 
 /* Return number of nodes in the list.
