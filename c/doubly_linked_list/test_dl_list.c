@@ -6,7 +6,7 @@
  *    Description:  test doubly linked list
  *
  *        Version:  1.0
- *        Created:  2016年03月20日 23时55分03秒
+ *        Created:  2016-03-20 23:55:03
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -37,7 +37,7 @@ int test_creation(void)
 
 	if(list_len(list) != 10) printf("Creation encountered some errors !\n\n");
 	print_list(list);
-	destroy_list(list);
+	list_destroy(&list);
 
 	return OK;
 }
@@ -51,6 +51,7 @@ int test_find(void)
 	list = create_list_with_random_data(9);
 	if(NULL == list) return ERROR;
 
+	print_list(list);
 	p = list_find_data(list, 25);
 	if(p != NULL)
 	{
@@ -64,6 +65,7 @@ int test_find(void)
 	p = list_get_nth_entry(list, n);
 	if(p != NULL)
 	{
+		printf("Found the %dth entry!\n", n);
 		printf("List item : addr(%p) | prev(%9p) | data(%3d) | next(%9p)\n\n",
 			p, p->prev, p->data, p->next);
 	}
@@ -85,7 +87,7 @@ int test_find(void)
 	}
 	else
 		printf("The tail entry was not found!\n");
-	destroy_list(list);
+	list_destroy(&list);
 
 	return OK;
 }
@@ -95,6 +97,7 @@ int test_delete(void)
 	ENTRY  *list;
 	ENTRY  *p;
 	uint32 n, len = 13;
+	element_type data;
 
 	list = create_list_with_random_data(len);
 	if(NULL == list) return ERROR;
@@ -131,15 +134,47 @@ int test_delete(void)
 	}
 	print_list(list);
 
-	destroy_list(list);
+	list_destroy(&list);
+	if(list_len(list) != 0) printf("list_destroy encountered some errors !\n");
+	print_list(list);
+
+	list = create_list_with_random_data(27);
+	if(NULL == list) return ERROR;
+	print_list(list);
+
+	n = 0;
+	data = list_get_nth_element(list, n);
+	printf("Deleted %d entries(data = %d)\n\n",
+		list_delete_data(&list, data), data);
+	//print_list(list);
+
+	n = list_len(list);
+	data = list_get_nth_element(list, n);
+	printf("Deleted %d entries(data = %d)\n\n",
+		list_delete_data(&list, data), data);
+	//print_list(list);
+
+	n = list_len(list) / 2;
+	data = list_get_nth_element(list, n);
+	printf("Deleted %d entries(data = %d)\n\n",
+		list_delete_data(&list, data), data);
+	//print_list(list);
+
+	n = 1;
+	data = list_get_nth_element(list, n);
+	printf("Deleted %d entries(data = %d)\n\n",
+		list_delete_data(&list, data), data);
+	print_list(list);
+
+	list_destroy(&list);
 
 	return OK;
 }
 
 int main(void)
 {
-	printf("Start testing singly linked list: \n");
-	test_creation();
+	printf("Start testing doubly linked list: \n");
+	//test_creation();
 	test_find();
 	test_delete();
 

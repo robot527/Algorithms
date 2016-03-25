@@ -6,7 +6,7 @@
  *    Description:  definitions of doubly linked list
  *
  *        Version:  1.0
- *        Created:  2016年03月20日 22时45分13秒
+ *        Created:  2016-03-20 22:45:13
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -28,6 +28,8 @@ typedef struct _dl_list_entry_
 	struct _dl_list_entry_ *next;
 }ENTRY;
 
+#define LIST_INVALID_DATA  2147483647
+
 
 /* Return number of entries in the list.
  * if param list is null, returns 0. */
@@ -39,6 +41,10 @@ ENTRY *list_find_data(ENTRY *list, element_type x);
 /* Get the entry at a specified index in the list.
  * Return entry point at the specified index, or NULL if out of range. */
 ENTRY *list_get_nth_entry(ENTRY *list, uint32 n);
+
+/* Get the element at a specified index in the list.
+ * Return the data at the specified index, or LIST_INVALID_DATA if failed. */
+element_type list_get_nth_element(ENTRY *list, uint32 n);
 
 /* Insert a new entry with x before head entry to the list.
  * Return the new entry, or NULL if failed. */
@@ -59,8 +65,12 @@ ENTRY *create_list_with_random_data(uint32 n);
  * Return OK, or ERROR if not failed. */
 int list_delete_entry(ENTRY **list, ENTRY *entry);
 
+/* Delete all occurrences of data from the list.
+ * Return the number of entries deleted from the list, or 0 if not found. */
+uint32 list_delete_data(ENTRY **list, element_type data);
+
 /* Delete all entries in the list. */
-void destroy_list(ENTRY *list);
+void list_destroy(ENTRY **list);
 
 /* Print all entries content of list to stdout */
 void print_list(ENTRY *list);

@@ -6,7 +6,7 @@
  *    Description:  implementations of doubly linked list
  *
  *        Version:  1.0
- *        Created:  2016年03月20日 22时55分06秒
+ *        Created:  2016-03-20 22:55:06
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -42,7 +42,7 @@ int list_len(ENTRY *list)
 		p = p->next;
 		i++;
 	}
-	
+
 	return i;
 }
 
@@ -73,6 +73,17 @@ ENTRY *list_get_nth_entry(ENTRY *list, uint32 n)
 	}
 
 	return p;
+}
+
+element_type list_get_nth_element(ENTRY *list, uint32 n)
+{
+	ENTRY *p;
+
+	assert(list != NULL && list->prev == NULL);
+	p = list_get_nth_entry(list, n);
+	if(NULL == p) return LIST_INVALID_DATA;
+
+	return p->data;
 }
 
 ENTRY *list_prepend(ENTRY **list, element_type x)
@@ -139,13 +150,14 @@ ENTRY *create_list_with_random_data(uint32 n)
 	ENTRY *list = NULL;
 
 	assert(n > 0);
+	srand(time(0));
 	for(i = 0; i < n; i++)
 	{
-		data = rand() % (n + 50);
+		data = rand() % (n + 30);
 		printf("%3d ", data);
 		if(list_append(&list, data) == NULL)
 		{
-			destroy_list(list);
+			list_destroy(&list);
 			return NULL;
 		}
 	}
@@ -159,7 +171,7 @@ int list_delete_entry(ENTRY **list, ENTRY *entry)
 	ENTRY *p;
 
 	/* If the list is empty, or entry is NULL, always fail */
-	if(NULL == list || NULL == *list || NULL== entry) return ERROR;
+	if(NULL == list || NULL == *list || NULL == entry) return ERROR;
 	if(*list == entry)
 	{
 		*list = entry->next;
@@ -179,18 +191,46 @@ int list_delete_entry(ENTRY **list, ENTRY *entry)
 	return OK;
 }
 
-void destroy_list(ENTRY *list)
+uint32 list_delete_data(ENTRY **list, element_type data)
+{
+	uint32 count = 0;
+	ENTRY  *p, *temp;
+
+	if(NULL == list || NULL == *list) return 0;
+	p = *list;
+	do
+	{
+		temp = p->next;
+		if(p->data == data)
+		{
+			if(NULL == p->prev)
+				*list = p->next;
+			else
+				p->prev->next = p->next;
+			if(p->next != NULL) p->next->prev = p->prev;
+
+			free(p);
+			count++;
+		}
+		p = temp;
+	}while(p != NULL);
+
+	return count;
+}
+
+void list_destroy(ENTRY **list)
 {
 	ENTRY *p, *temp;
 
-	assert(list != NULL && list->prev == NULL);
-	p = list;
+	if(NULL == list || NULL == *list || (*list)->prev != NULL) return;
+	p = *list;
 	while(p != NULL)
 	{
 		temp = p->next;
 		free(p);
 		p = temp;
 	}
+	*list = NULL;
 }
 
 
@@ -204,7 +244,7 @@ void print_list(ENTRY *list)
 		printf("Empty list !\n\n");
 		return;
 	}
-	printf("The list has %u nodes: \n", list_len(list));
+	printf("The list has %u entries: \n", list_len(list));
 	p = list;
 	do
 	{
