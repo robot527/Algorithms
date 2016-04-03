@@ -50,6 +50,9 @@ void polynomial_negate(poly_head *poly);
  * Return the head of the result polynomial. */
 poly_head *polynomial_subtract(poly_head *poly1, poly_head *poly2);
 
+/* Multiply the two polynomials. */
+poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2);
+
 /* Print the polynomial	to stdout */
 void show_polynomial(poly_head *poly);
 

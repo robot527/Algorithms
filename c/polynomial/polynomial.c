@@ -26,7 +26,7 @@
 #include "../lib/common_def.h"
 #include "polynomial.h"
 
-#define TEST	0
+#define TEST	3
 
 #if (TEST == 0)
 int nodes1[][2] = {{10, 1000}, {5, 14}, {1, 0}};
@@ -174,7 +174,40 @@ poly_head *polynomial_subtract(poly_head *poly1, poly_head *poly2)
 poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2)
 {
 	poly_head *poly_resu;
+	poly_node *p1, *p2;
+	poly_node *pNew, *pTail = NULL;
+	
+	if(NULL == poly1 || NULL == poly2) return NULL;
 
+	poly_resu = malloc(sizeof(poly_head));
+	if(NULL == poly_resu) return NULL;
+	poly_resu->next = NULL;
+	poly_resu->count = 0;
+	p2 = poly2->next;
+	while(p2 != NULL)
+	{
+		p1 = poly1->next;
+		while(p1 != NULL)
+		{
+			pNew = malloc(sizeof(poly_node));
+			if(NULL == pNew)
+			{
+				polynomial_destory(poly_resu);
+				return NULL;
+			}
+			pNew->next = NULL;
+			pNew->coefficient = p1->coefficient * p2->coefficient;
+			pNew->exponent = p1->exponent + p2->exponent;
+			if(NULL == pTail)
+				poly_resu->next = pNew;
+			else
+				pTail->next = pNew;
+			pTail = pNew;
+			poly_resu->count++;
+			p1 = p1->next;
+		}
+		p2 = p2->next;
+	}
 
 	return poly_resu;
 }
@@ -202,6 +235,7 @@ void show_polynomial(poly_head *poly)
 		else
 			printf("%+d", p->coefficient);
 	}
+	printf("\n%d items.", poly->count);
 	printf("\n\n");
 }
 
@@ -230,6 +264,7 @@ int main(void)
 	poly_head *poly1, *poly2;
 	poly_head *poly_sum;
 	poly_head *poly_sub;
+	poly_head *poly_mul;
 
 	poly1 = polynomial_generate(nodes1, sizeof(nodes1) / sizeof(nodes1[0]));
 	poly2 = polynomial_generate(nodes2, sizeof(nodes2) / sizeof(nodes2[0]));
@@ -242,6 +277,10 @@ int main(void)
 	poly_sum = polynomial_add(poly1, poly2);
 	printf("The polynomial-sum is: \n");
 	show_polynomial(poly_sum);
+
+	poly_mul = polynomial_multiply(poly1, poly2);
+	printf("The polynomial-mul is: \n");
+	show_polynomial(poly_mul);
 
 	poly_sub = polynomial_subtract(poly1, poly2);
 	printf("The polynomial-sub is: \n");
