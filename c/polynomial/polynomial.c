@@ -135,12 +135,17 @@ poly_head *polynomial_add(poly_head *poly1, poly_head *poly2)
 			pNew->coefficient = p2->coefficient;
 			p2 = p2->next;
 		}
-		if(NULL == pTail)
-			poly_resu->next = pNew;
+		if(pNew->coefficient != 0)
+		{
+			if(NULL == pTail)
+				poly_resu->next = pNew;
+			else
+				pTail->next = pNew;
+			pTail = pNew;
+			poly_resu->count++;
+		}
 		else
-			pTail->next = pNew;
-		pTail = pNew;
-		poly_resu->count++;
+			free(pNew);
 	}
 
 	return poly_resu;
@@ -228,12 +233,15 @@ void show_polynomial(poly_head *poly)
 	while(p->next != NULL)
 	{
 		p = p->next;
-		if(1 == p->exponent)
-			printf("%+dX", p->coefficient);
-		else if(p->exponent != 0)
-			printf("%+dX^%d", p->coefficient, p->exponent);
-		else
-			printf("%+d", p->coefficient);
+		if(p->coefficient != 0)
+		{
+			if(1 == p->exponent)
+				printf("%+dX", p->coefficient);
+			else if(p->exponent != 0)
+				printf("%+dX^%d", p->coefficient, p->exponent);
+			else /* if(p->exponent == 0) */
+				printf("%+d", p->coefficient);
+		}
 	}
 	printf("\n%d items.", poly->count);
 	printf("\n\n");
