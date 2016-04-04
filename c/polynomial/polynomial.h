@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  robot527 (), 
+ *         Author:  robot527 (),
  *
  * =====================================================================================
  */
@@ -52,6 +52,12 @@ poly_head *polynomial_subtract(poly_head *poly1, poly_head *poly2);
 
 /* Multiply the two polynomials. */
 poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2);
+
+/* Merge similar items of the polynomial. */
+void polynomial_similar_items_merge(poly_head *poly);
+
+/* Sort the polynomial by exponent in descending order. */
+void polynomial_sort(poly_head *poly);
 
 /* Print the polynomial	to stdout */
 void show_polynomial(poly_head *poly);

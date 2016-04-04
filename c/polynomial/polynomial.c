@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  robot527 (), 
+ *         Author:  robot527 (),
  *
  * =====================================================================================
  */
@@ -26,7 +26,7 @@
 #include "../lib/common_def.h"
 #include "polynomial.h"
 
-#define TEST	3
+#define TEST	2
 
 #if (TEST == 0)
 int nodes1[][2] = {{10, 1000}, {5, 14}, {1, 0}};
@@ -82,7 +82,7 @@ poly_head *polynomial_add(poly_head *poly1, poly_head *poly2)
 	poly_head *poly_resu;
 	poly_node *p1, *p2;
 	poly_node *pNew, *pTail = NULL;
-	
+
 	if(poly1 != NULL && NULL == poly2) return poly1;
 	if(poly2 != NULL && NULL == poly1) return poly2;
 
@@ -172,7 +172,7 @@ poly_head *polynomial_subtract(poly_head *poly1, poly_head *poly2)
 	if(poly1 != NULL && NULL == poly2) return poly1;
 	polynomial_negate(poly2);
 	poly_resu = polynomial_add(poly1, poly2);
-	
+
 	return poly_resu;
 }
 
@@ -181,7 +181,7 @@ poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2)
 	poly_head *poly_resu;
 	poly_node *p1, *p2;
 	poly_node *pNew, *pTail = NULL;
-	
+
 	if(NULL == poly1 || NULL == poly2) return NULL;
 
 	poly_resu = malloc(sizeof(poly_head));
@@ -213,10 +213,130 @@ poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2)
 		}
 		p2 = p2->next;
 	}
+	polynomial_similar_items_merge(poly_resu);
+	polynomial_sort(poly_resu);
 
 	return poly_resu;
 }
 
+void polynomial_similar_items_merge(poly_head *poly)
+{
+	poly_node *p, *prev, *temp;
+
+	if(NULL == poly || poly->count < 2)
+	{
+		printf("Invalid polynomial !\n\n");
+		return;
+	}
+	p = poly->next;
+	while(p != NULL)
+	{
+		prev = p;
+		temp = p->next;
+		while(temp != NULL)
+		{
+			if(temp->exponent == p->exponent)
+			{
+				p->coefficient += temp->coefficient;
+				prev->next = temp->next;
+				free(temp);
+				poly->count--;
+				temp = prev->next;
+			}
+			else
+			{
+				prev = temp;
+				temp = temp->next;
+			}
+		}
+		p = p->next;
+	}
+	p = poly->next;
+	while(p != NULL && 0 == p->coefficient)
+	{
+		/* delete nodes which coefficient is 0 at the first position. */
+		poly->next = p->next;
+		free(p);
+		poly->count--;
+		p = poly->next;
+	}
+	p = poly->next;
+	while(p != NULL && p->next != NULL)
+	{
+		if(0 == p->next->coefficient)
+		{
+			/* delete nodes which coefficient is 0 at follow position. */
+			temp = p->next;
+			p->next = temp->next;
+			free(temp);
+			poly->count--;
+		}
+		p = p->next;
+	}
+}
+
+void polynomial_sort(poly_head *poly)
+{
+	poly_node *p, *prev, *temp;
+	int flag = 1;
+
+	if(NULL == poly || poly->count < 2)
+	{
+		printf("Already sorted !\n");
+		return;
+	}
+	p = poly->next;
+	while(p != NULL && flag != 0)
+	{
+		prev = p;
+		temp = p->next;
+		flag = 0;
+		while(temp != NULL)
+		{
+			if(temp->exponent > p->exponent)
+			{
+				flag = 1;
+				//printf("swp %d <-> %d\n", p->exponent, temp->exponent);
+				p->next = temp->next;
+				temp->next = p;
+				if(p != prev)
+					prev->next = temp;
+				else
+					poly->next = temp;
+				prev = temp;
+				p = prev->next;
+				temp = p->next;
+			}
+			else
+			{
+				prev = p;
+				p = temp;
+				temp = temp->next;
+			}
+		}
+		p = poly->next;
+	}
+}
+
+void test_merge_and_sort()
+{
+	int nodes[][2] = {{5, 6}, {-5, 6}, {-2, 4}, {2, 4}, {7, 3}, {-4, 2},
+		{-2, 3}, {1, 2}, {1, 5}, {8, 1}, {-6, 0}, {-8, 1}};
+	poly_head *poly;
+
+	printf("Testing polynomial merge similar items:\n");
+	poly = polynomial_generate(nodes, sizeof(nodes) / sizeof(nodes[0]));
+	show_polynomial(poly);
+
+	polynomial_similar_items_merge(poly);
+	show_polynomial(poly);
+	printf("Merged done.\n\n");
+
+	polynomial_sort(poly);
+	show_polynomial(poly);
+	printf("Sorted done.\n");
+	polynomial_destory(poly);
+}
 
 void show_polynomial(poly_head *poly)
 {
@@ -229,11 +349,23 @@ void show_polynomial(poly_head *poly)
 	}
 	p = poly->next;
 	//printf("The polynomial is: \n");
-	printf("%dX^%d", p->coefficient, p->exponent);
+	if(1 == p->coefficient)
+		printf("X^%d", p->exponent);
+	else
+		printf("%dX^%d", p->coefficient, p->exponent);
 	while(p->next != NULL)
 	{
 		p = p->next;
-		if(p->coefficient != 0)
+		if(1 == p->coefficient)
+		{
+			if(1 == p->exponent)
+				printf("+X");
+			else if(p->exponent != 0)
+				printf("+X^%d", p->exponent);
+			else /* if(p->exponent == 0) */
+				printf("+1");
+		}
+		else if(p->coefficient != 0)
 		{
 			if(1 == p->exponent)
 				printf("%+dX", p->coefficient);
@@ -243,8 +375,8 @@ void show_polynomial(poly_head *poly)
 				printf("%+d", p->coefficient);
 		}
 	}
-	printf("\n%d items.", poly->count);
-	printf("\n\n");
+	printf("\t(%d items)\n", poly->count);
+	printf("\n");
 }
 
 void polynomial_destory(poly_head *poly)
@@ -296,6 +428,11 @@ int main(void)
 
 	polynomial_destory(poly1);
 	polynomial_destory(poly2);
+	polynomial_destory(poly_sum);
+	polynomial_destory(poly_sub);
+	polynomial_destory(poly_mul);
+
+	test_merge_and_sort();
 
 	printf("\nAll tests done.\n");
 	exit(EXIT_SUCCESS);
