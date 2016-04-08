@@ -26,30 +26,12 @@
 #include "../lib/common_def.h"
 #include "polynomial.h"
 
-#define TEST	2
 
-#if (TEST == 0)
-int nodes1[][2] = {{10, 1000}, {5, 14}, {1, 0}};
-int nodes2[][2] = {{3, 1990}, {-2, 1492}, {11, 1}, {5, 0}};
-#elif (TEST == 1)
-int nodes1[][2] = {{2, 5}, {5, 3}, {7, 2}, {6, 0}};
-int nodes2[][2] = {{3, 4}, {-2, 3}, {9, 1}, {8, 0}};
-#elif (TEST == 2)
-int nodes1[][2] = {{2, 5}, {5, 3}, {4, 2}, {1, 0}};
-int nodes2[][2] = {{-3, 5}, {6, 4}, {7, 1}};
-#elif (TEST == 3)
-int nodes1[][2] = {{11, 3}, {-3, 1}, {7, 0}};
-int nodes2[][2] = {{2, 5}, {5, 2}, {3, 1}, {-12, 0}};
-#else
-int nodes1[][2] = {{7, 3}, {5, 2}, {9, 0}};
-int nodes2[][2] = {{3, 3}, {-2, 2}};
-#endif
-
-poly_head *polynomial_generate(int node[][2], int rows)
+poly_head *polynomial_generate(int node[][2], uint32 rows)
 {
 	poly_head *poly;
 	poly_node *pNew, *pTail = NULL;
-	int i;
+	uint32 i;
 
 	if(rows < 2) return NULL;
 	poly = malloc(sizeof(poly_head));
@@ -75,6 +57,18 @@ poly_head *polynomial_generate(int node[][2], int rows)
 	}
 
 	return poly;
+}
+
+void init_two_dimensional_array_with_random_data(int arr[][2], uint32 rows)
+{
+	uint32 i;
+	
+	srand(time(0));
+	for(i = 0; i < rows; i++)
+	{
+		arr[i][0] = rand() % 301 - 150; /* [-150, 150] */
+		arr[i][1] = rand() % 12;
+	}
 }
 
 poly_head *polynomial_add(poly_head *poly1, poly_head *poly2)
@@ -278,54 +272,58 @@ void polynomial_similar_items_merge(poly_head *poly)
 void polynomial_sort(poly_head *poly)
 {
 	poly_node *p, *prev, *temp;
+	poly_node *sorted_end;
 	int flag = 1;
 
 	if(NULL == poly || poly->count < 2)
 	{
-		printf("Already sorted !\n");
+		printf("Invalid polynomial !\n\n");
 		return;
 	}
-	p = poly->next;
-	while(p != NULL && flag != 0)
+	/* direct insert sort */
+	sorted_end = poly->next;
+	while(sorted_end != NULL)
 	{
-		prev = p;
-		temp = p->next;
+		temp = sorted_end->next;
+		if(NULL == temp) break; /* sequence is done */
 		flag = 0;
-		while(temp != NULL)
+		p = poly->next; /* from start */
+		prev = p;
+		while(p != NULL && p != sorted_end->next) /* to sorted end */
 		{
 			if(temp->exponent > p->exponent)
 			{
 				flag = 1;
-				//printf("swp %d <-> %d\n", p->exponent, temp->exponent);
-				p->next = temp->next;
+				//printf("insert %d before %d\n", temp->exponent, p->exponent);
+				sorted_end->next = temp->next;
 				temp->next = p;
 				if(p != prev)
 					prev->next = temp;
 				else
 					poly->next = temp;
-				prev = temp;
-				p = prev->next;
-				temp = p->next;
+				break;
 			}
 			else
 			{
 				prev = p;
-				p = temp;
-				temp = temp->next;
+				p = p->next;
 			}
 		}
-		p = poly->next;
+		if(0 == flag) sorted_end = sorted_end->next;
 	}
 }
 
 void test_merge_and_sort()
 {
-	int nodes[][2] = {{5, 6}, {-5, 6}, {-2, 4}, {2, 4}, {7, 3}, {-4, 2},
-		{-2, 3}, {1, 2}, {1, 5}, {8, 1}, {-6, 0}, {-8, 1}};
+	int nodes[20][2];
 	poly_head *poly;
+	uint32 row;
 
-	printf("Testing polynomial merge similar items:\n");
-	poly = polynomial_generate(nodes, sizeof(nodes) / sizeof(nodes[0]));
+	srand(time(0));
+	row = rand() % 19 + 2;
+	init_two_dimensional_array_with_random_data(nodes, row);
+	printf("Testing polynomial merge similar items and sort:\n");
+	poly = polynomial_generate(nodes, row);
 	show_polynomial(poly);
 
 	polynomial_similar_items_merge(poly);
@@ -350,9 +348,23 @@ void show_polynomial(poly_head *poly)
 	p = poly->next;
 	//printf("The polynomial is: \n");
 	if(1 == p->coefficient)
-		printf("X^%d", p->exponent);
-	else
-		printf("%dX^%d", p->coefficient, p->exponent);
+	{
+		if(1 == p->exponent)
+			printf("X");
+		else if(p->exponent != 0)
+			printf("X^%d", p->exponent);
+		else /* if(p->exponent == 0) */
+			printf("1");
+	}
+	else if(p->coefficient != 0)
+	{
+		if(1 == p->exponent)
+			printf("%dX", p->coefficient);
+		else if(p->exponent != 0)
+			printf("%dX^%d", p->coefficient, p->exponent);
+		else /* if(p->exponent == 0) */
+			printf("%d", p->coefficient);
+	}
 	while(p->next != NULL)
 	{
 		p = p->next;
@@ -406,24 +418,46 @@ int main(void)
 	poly_head *poly_sub;
 	poly_head *poly_mul;
 
+#if 0
+	int nodes1[][2] = {{10, 1000}, {5, 14}, {1, 0}};
+	int nodes2[][2] = {{3, 1990}, {-2, 1492}, {11, 1}, {5, 0}};
+
 	poly1 = polynomial_generate(nodes1, sizeof(nodes1) / sizeof(nodes1[0]));
 	poly2 = polynomial_generate(nodes2, sizeof(nodes2) / sizeof(nodes2[0]));
+#else
+	int nodes1[10][2];
+	int nodes2[10][2];
+	uint32 row1, row2;
+
+	srand(time(0));
+	row1 = rand() % 9 + 2;
+	init_two_dimensional_array_with_random_data(nodes1, row1);
+	poly1 = polynomial_generate(nodes1, row1);
+	polynomial_similar_items_merge(poly1);
+	polynomial_sort(poly1);
+	row2 = rand() % 9 + 2;
+	init_two_dimensional_array_with_random_data(nodes2, row2);
+	poly2 = polynomial_generate(nodes2, row2);
+	polynomial_similar_items_merge(poly2);
+	polynomial_sort(poly2);
+#endif
 
 	printf("The polynomial-1 is: \n");
 	show_polynomial(poly1);
 	printf("The polynomial-2 is: \n");
 	show_polynomial(poly2);
+	printf("==============================================================\n");
 
 	poly_sum = polynomial_add(poly1, poly2);
-	printf("The polynomial-sum is: \n");
+	printf("The polynomials' sum is: \n");
 	show_polynomial(poly_sum);
 
 	poly_mul = polynomial_multiply(poly1, poly2);
-	printf("The polynomial-mul is: \n");
+	printf("The polynomials' product is: \n");
 	show_polynomial(poly_mul);
 
 	poly_sub = polynomial_subtract(poly1, poly2);
-	printf("The polynomial-sub is: \n");
+	printf("The polynomials' difference is: \n");
 	show_polynomial(poly_sub);
 
 	polynomial_destory(poly1);
@@ -432,6 +466,7 @@ int main(void)
 	polynomial_destory(poly_sub);
 	polynomial_destory(poly_mul);
 
+	printf("==============================================================\n");
 	test_merge_and_sort();
 
 	printf("\nAll tests done.\n");

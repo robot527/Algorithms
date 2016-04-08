@@ -37,7 +37,9 @@ typedef struct _polynomial_head_
 
 /* Generate a polynomial by a two dimensional array,
  * Return the head of the new polynomial list, or NULL if failed. */
-poly_head *polynomial_generate(int node[][2], int rows);
+poly_head *polynomial_generate(int node[][2], uint32 rows);
+
+void init_two_dimensional_array_with_random_data(int arr[][2], uint32 rows);
 
 /* Add the two polynomials,
  * Return the head of the sum polynomial list, or NULL if failed. */
