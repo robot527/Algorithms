@@ -256,6 +256,24 @@ void print_list(ENTRY *list)
 	printf("\n");
 }
 
+void list_reverse(ENTRY **list)
+{
+	ENTRY        *p, *q;
+	element_type temp;
+
+	if(NULL == list || NULL == *list || (*list)->prev != NULL) return;
+	p = *list;
+	q = list_tail(list);
+	/* Two pointer traversal, until they encountered. */
+	while(p != NULL && q != NULL && p != q && q->next != p)
+	{
+		temp = p->data;
+		p->data = q->data;
+		q->data = temp;
+		p = p->next;
+		q = q->prev;
+	}
+}
 
 #endif /* _DL_LIST_C_ */
 

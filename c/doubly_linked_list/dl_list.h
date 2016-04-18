@@ -75,6 +75,9 @@ void list_destroy(ENTRY **list);
 /* Print all entries content of list to stdout */
 void print_list(ENTRY *list);
 
+/* Reverse data of the list. */
+void list_reverse(ENTRY **list);
+
 
 #endif  /* _DL_LIST_H_ */
 

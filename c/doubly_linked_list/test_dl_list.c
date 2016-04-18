@@ -206,12 +206,33 @@ int test_delete(void)
 	return OK;
 }
 
+int test_reverse(void)
+{
+	ENTRY  *list;
+	uint32 len;
+
+	printf("==============================================================\n");
+	printf("Testing list reverse function:\n");
+	srand(time(0));
+	len = rand() % 20 + 1;
+	list = create_list_with_random_data(len);
+	if(NULL == list) return ERROR;
+	print_list(list);
+
+	list_reverse(&list);
+	print_list(list);
+	list_destroy(&list);
+
+	return OK;
+}
+
 int main(void)
 {
 	printf("Start testing doubly linked list: \n");
 	test_append_prepend();
 	test_find();
 	test_delete();
+	test_reverse();
 
 	printf("\nAll tests done.\n");
 	exit(EXIT_SUCCESS);
