@@ -62,7 +62,12 @@ int quick_sort_v1(int *arr, int len)
 	if (len < 2) return OK;
 	left = (int *)calloc(len, sizeof(int));
 	right = (int *)calloc(len, sizeof(int));
-	if (NULL == left || NULL == right) return ERROR;
+	if (NULL == left || NULL == right)
+	{
+		if (left != NULL) free(left);
+		if (right != NULL) free(right);
+		return ERROR;
+	}
 	pivot = arr[0];
 	for (i = 1; i < len; i ++)
 	{
@@ -141,7 +146,6 @@ int main(void)
 	if (quick_sort_v1(a, n) == OK)
 	{
 		printf("\n快速排序后:\n");
-		show_array(a, n);
 	}
 	else printf("排序失败！\n");
 #else

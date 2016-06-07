@@ -43,6 +43,7 @@ poly_head *polynomial_generate(int node[][2], uint32 rows)
 		pNew = malloc(sizeof(poly_node));
 		if(NULL == pNew)
 		{
+			polynomial_destory(poly);
 			return NULL;
 		}
 		pNew->coefficient = node[i][0];
