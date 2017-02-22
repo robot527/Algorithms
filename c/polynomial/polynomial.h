@@ -55,6 +55,9 @@ poly_head *polynomial_subtract(poly_head *poly1, poly_head *poly2);
 /* Multiply the two polynomials. */
 poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2);
 
+/* poly1 divided by poly2 */
+poly_head *polynomial_division(poly_head *poly1, poly_head *poly2);
+
 /* Merge similar items of the polynomial. */
 void polynomial_similar_items_merge(poly_head *poly);
 

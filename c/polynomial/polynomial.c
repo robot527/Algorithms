@@ -64,7 +64,7 @@ void init_two_dimensional_array_with_random_data(int arr[][2], uint32 rows)
 {
 	uint32 i;
 	
-	srand(time(0));
+	srand(time(0) / rows);
 	for(i = 0; i < rows; i++)
 	{
 		arr[i][0] = rand() % 301 - 150; /* [-150, 150] */
@@ -214,6 +214,112 @@ poly_head *polynomial_multiply(poly_head *poly1, poly_head *poly2)
 	return poly_resu;
 }
 
+/* test is a divisible by b. */
+int is_divisible(int a, int b)
+{
+	int temp;
+
+	if(0 == b) return false;
+	temp = a / b;
+	if((b * temp) == a)
+		return true;
+	else
+		return false;
+}
+
+/* poly1 divided by poly2 */
+poly_head *polynomial_division(poly_head *poly1, poly_head *poly2)
+{
+	poly_head *poly_resu;
+	poly_head *poly_sn = NULL; /* polynomial with one node */
+	poly_head *poly1_new = NULL, *poly1_new_last;
+	poly_head *poly2_m = NULL;
+	poly_node *p1H, *p2H, *quotientNode;
+	poly_node *pTail = NULL;
+
+	if(NULL == poly1 || NULL == poly2 || NULL == poly1->next
+		|| NULL == poly2->next)
+		return NULL;
+
+	poly_resu = malloc(sizeof(poly_head));
+	if(NULL == poly_resu) return NULL;
+	poly_resu->next = NULL;
+	poly_resu->count = 0;
+	poly_sn = malloc(sizeof(poly_head));
+	if(NULL == poly_sn)
+	{
+		goto FAILED;
+	}
+	poly_sn->next = NULL;
+	poly_sn->count = 1;
+	p2H = poly2->next; /* max exponent node of poly2 */
+	poly1_new = poly1;
+	p1H = poly1_new->next; /* max exponent node of poly1_new */
+	while(p1H != NULL && p1H->exponent != 0)
+	{
+		if(is_divisible(p1H->coefficient, p2H->coefficient) != true)
+		{
+			printf("The poly1 is not divisible by poly2!\n");
+			goto FAILED;
+		}
+		quotientNode = malloc(sizeof(poly_node));
+		if(NULL == quotientNode)
+		{
+			goto FAILED;
+		}
+		quotientNode->next = NULL;
+		quotientNode->coefficient = p1H->coefficient / p2H->coefficient;
+		quotientNode->exponent = p1H->exponent - p2H->exponent;
+		poly_sn->next = quotientNode;
+		if(NULL == pTail)
+			poly_resu->next = quotientNode;
+		else
+			pTail->next = quotientNode;
+		pTail = quotientNode;
+		poly_resu->count++;
+		if(0 == quotientNode->exponent)
+		{
+			printf("last node is %d\n", quotientNode->coefficient);
+			break;
+		}
+		poly2_m = polynomial_multiply(poly2, poly_sn);
+		if(NULL == poly2_m)
+		{
+			goto FAILED;
+		}
+		poly1_new_last = poly1_new;
+		poly1_new = polynomial_subtract(poly1_new, poly2_m);
+		if(poly1_new_last != poly1)
+		{
+			polynomial_destory(poly1_new_last);
+		}
+		if(NULL == poly1_new)
+		{
+			goto FAILED;
+		}
+		polynomial_destory(poly2_m);
+		//poly2_m = NULL;
+		p1H = poly1_new->next;
+	}
+	free(poly_sn);
+	if(poly1_new != poly1)
+	{
+		polynomial_destory(poly1_new);
+	}
+
+	return poly_resu;
+
+FAILED:
+	polynomial_destory(poly_resu);
+	free(poly_sn);
+	if(poly1_new != poly1)
+	{
+		polynomial_destory(poly1_new);
+	}
+	polynomial_destory(poly2_m);
+	return NULL;
+}
+
 void polynomial_similar_items_merge(poly_head *poly)
 {
 	poly_node *p, *prev, *temp;
@@ -333,7 +439,7 @@ void test_merge_and_sort()
 
 	polynomial_sort(poly);
 	show_polynomial(poly);
-	printf("Sorted done.\n");
+	printf("Sorted done.\n\n");
 	polynomial_destory(poly);
 }
 
@@ -396,9 +502,8 @@ void polynomial_destory(poly_head *poly)
 {
 	poly_node *p, *temp;
 
-	assert(poly != NULL);
+	if(NULL == poly) return;
 	p = poly->next;
-	poly->next = NULL;
 	while(p != NULL)
 	{
 		temp = p->next;
@@ -407,7 +512,43 @@ void polynomial_destory(poly_head *poly)
 	}
 	poly->count = 0;
 	free(poly);
-	poly = NULL;
+	//poly = NULL;//Assignment of function parameter has no effect outside the function.
+}
+
+static void test_polynomial_division()
+{
+#define ROW_NUM 1000
+
+	poly_head *poly1, *poly2, *poly_m;
+	poly_head *poly_div;
+	int nodes1[][2] = {{1, 2}, {-2, 1}, {1, 0}};
+	int nodes2[ROW_NUM][2];
+	int i;
+
+	srand(time(0));
+	for(i = 0; i < ROW_NUM; i++)
+	{
+		nodes2[i][0] = rand() % 101 - 50;
+		nodes2[i][1] = ROW_NUM - i;
+	}
+
+	poly1 = polynomial_generate(nodes1, sizeof(nodes1) / sizeof(nodes1[0]));
+	poly2 = polynomial_generate(nodes2, sizeof(nodes2) / sizeof(nodes2[0]));
+	poly_m = polynomial_multiply(poly1, poly2);
+
+	printf("Testing polynomial division:\n");
+	printf("The polynomial-A is: \n");
+	show_polynomial(poly_m);
+	printf("The polynomial-B is: \n");
+	show_polynomial(poly1);
+	printf("The polynomials' quotient is: \n");
+	poly_div = polynomial_division(poly_m, poly1);
+	show_polynomial(poly_div);
+
+	polynomial_destory(poly1);
+	polynomial_destory(poly2);
+	polynomial_destory(poly_m);
+	polynomial_destory(poly_div);
 }
 
 int main(void)
@@ -436,6 +577,7 @@ int main(void)
 	poly1 = polynomial_generate(nodes1, row1);
 	polynomial_similar_items_merge(poly1);
 	polynomial_sort(poly1);
+	srand(time(0) / row1);
 	row2 = rand() % 9 + 2;
 	init_two_dimensional_array_with_random_data(nodes2, row2);
 	poly2 = polynomial_generate(nodes2, row2);
@@ -461,14 +603,32 @@ int main(void)
 	printf("The polynomials' difference is: \n");
 	show_polynomial(poly_sub);
 
+	printf("==============================================================\n");
+	test_merge_and_sort();
+
+	printf("==============================================================\n");
+	test_polynomial_division();
+	{
+		poly_head *poly_div;
+
+		printf("The polynomial-1 is: \n");
+		show_polynomial(poly1);
+		printf("The polynomial-2 is: \n");
+		show_polynomial(poly2);
+		poly_div = polynomial_division(poly1, poly2);
+		if(poly_div != NULL)
+		{
+			printf("The polynomials' quotient is: \n");
+			show_polynomial(poly_div);
+			polynomial_destory(poly_div);
+		}
+	}
+
 	polynomial_destory(poly1);
 	polynomial_destory(poly2);
 	polynomial_destory(poly_sum);
 	polynomial_destory(poly_sub);
 	polynomial_destory(poly_mul);
-
-	printf("==============================================================\n");
-	test_merge_and_sort();
 
 	printf("\nAll tests done.\n");
 	exit(EXIT_SUCCESS);
