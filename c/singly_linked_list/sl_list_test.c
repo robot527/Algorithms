@@ -125,7 +125,7 @@ int test_delete(void)
 	pNode = get_nth_node(list, n);
 	if(delete_node(pNode, list) == OK)
 	{
-		printf("Deleted the %dth node!\n", n);
+		printf("Deleted the %uth node!\n", n);
 		if(list_len(list) != (len - 1))
 			printf("delete_node encountered some errors !\n");
 	}
@@ -135,7 +135,7 @@ int test_delete(void)
 	pNode = get_nth_node(list, n);
 	if(delete_node(pNode, list) == OK)
 	{
-		printf("Deleted the %dth node!\n", n);
+		printf("Deleted the %uth node!\n", n);
 		if(list_len(list) != (n - 1))
 			printf("delete_node encountered some errors !\n");
 	}
@@ -146,7 +146,7 @@ int test_delete(void)
 	pNode = get_nth_node(list, n);
 	if(delete_node(pNode, list) == OK)
 	{
-		printf("Deleted the %dth node!\n", n);
+		printf("Deleted the %uth node!\n", n);
 		if(list_len(list) != (len - 1))
 			printf("delete_node encountered some errors !\n");
 	}
@@ -186,6 +186,7 @@ int test_delete(void)
 
 	empty_list(list);
 	if(list_len(list) != 0) printf("empty_list encountered some errors !\n");
+	destroy_list(list);
 	
 	return OK;
 }

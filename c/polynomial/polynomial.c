@@ -298,7 +298,6 @@ poly_head *polynomial_division(poly_head *poly1, poly_head *poly2)
 			goto FAILED;
 		}
 		polynomial_destory(poly2_m);
-		//poly2_m = NULL;
 		p1H = poly1_new->next;
 	}
 	free(poly_sn);
@@ -512,7 +511,6 @@ void polynomial_destory(poly_head *poly)
 	}
 	poly->count = 0;
 	free(poly);
-	//poly = NULL;//Assignment of function parameter has no effect outside the function.
 }
 
 static void test_polynomial_division()

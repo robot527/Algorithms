@@ -238,7 +238,6 @@ void destroy_list(HEAD *list)
 	assert(list != NULL);
 	empty_list(list);
 	free(list);
-	list = NULL;
 }
 
 void print_list(HEAD *list)
